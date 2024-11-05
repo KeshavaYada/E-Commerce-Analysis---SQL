@@ -35,7 +35,7 @@ The `datasets` folder includes:
 
 ### ERD Diagram 🗂️
 The ERD diagram (`My_ERD_Database.png`) shows the relationships between entities like customers, orders, products, categories, and payments. This structure enables efficient querying and analysis.
-
+![ERD Diagram](https://github.com/YourUsername/YourRepositoryName/blob/main/path/to/My_ERD_Database.png)
 ---
 
 ## Business Problems Solved ✅
