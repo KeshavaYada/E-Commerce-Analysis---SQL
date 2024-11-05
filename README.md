@@ -123,10 +123,5 @@ Below are the business problems addressed, along with the SQL queries (located i
 - **Jupyter Notebook**: Required for EDA in `E_Commerce_EDA.ipynb`.
 - **pgAdmin**: Recommended for managing the PostgreSQL database.
 
-### Setup Instructions
 
-1. **Clone the Repository**  
-   Clone this repository to your local machine.
-   ```bash
-   git clone https://github.com/your-username/E-Commerce-Analysis---SQL.git
 
