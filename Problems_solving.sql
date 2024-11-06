@@ -1,7 +1,7 @@
 /*
 1. Top Selling Products
 Query the top 10 products by total sales value.
-Challenge: Include product name, total quantity sold, and total sales value.
+Include product name, total quantity sold, and total sales value.
 */
 
 select p.product_name,sum(o.quantity) as "total quantity sold",sum(o.total_sale) as "total sales value"
@@ -301,15 +301,17 @@ GROUP BY 1, 2, 3
 )
 SELECT 
 	seller_id,
-	sellers_reports.sellar_name,
+	sellers_reports.sellar_name,t.total_sale,
 	SUM(CASE WHEN order_status = 'Completed' THEN total_orders ELSE 0 END) as Completed_orders,
 	SUM(CASE WHEN order_status = 'Cancelled' THEN total_orders ELSE 0 END) as Cancelled_orders,
 	SUM(total_orders) as total_orders,
 	SUM(CASE WHEN order_status = 'Completed' THEN total_orders ELSE 0 END)::numeric/
 	SUM(total_orders)::numeric * 100 as successful_orders_percentage
 	
-FROM sellers_reports
-GROUP BY 1, 2
+FROM sellers_reports 
+join top_sellers as t
+on sellers_reports.seller_id = t.sellar_id
+GROUP BY 1, 2,3
 
 /*
 12. Product Profit Margin
@@ -382,7 +384,7 @@ GROUP BY 1
 
 
 /*
-16. IDENTITY customers into returning or new
+16. IDENTITY customers who are returning
 if the customer has done more than 5 return categorize them as returning otherwise new
 Challenge: List customers id, name, total orders, total returns
 */
@@ -409,7 +411,194 @@ ON oi.order_id = o.order_id
 GROUP BY 1
 )
 
+/*
+17. Top 5 Customers by Orders in Each State
+Identify the top 5 customers with the highest number of orders for each state.
+Challenge: Include the number of orders and total sales for each customer.
+*/
 
+SELECT * FROM 
+(SELECT 
+	c.state,
+	CONCAT(c.f_name, ' ', c.l_name) as customers,
+	COUNT(o.order_id) as total_orders,
+	SUM(total_sale) as total_sale,
+	DENSE_RANK() OVER(PARTITION BY c.state ORDER BY COUNT(o.order_id) DESC) as rank
+FROM orders as o
+JOIN 
+order_items as oi
+ON oi.order_id = o.order_id
+JOIN 
+customers as c
+ON 
+c.customer_id = o.customer_id
+GROUP BY 1, 2
+) as t1
+WHERE rank <=5
+
+
+
+-- 
+
+
+/*
+18. Revenue by Shipping Provider
+Calculate the total revenue handled by each shipping provider.
+Challenge: Include the total number of orders handled and the average delivery time for each provider.
+*/
+
+
+SELECT 
+	s.shipping_providers,
+	COUNT(o.order_id) as order_handled,
+	SUM(oi.total_sale) as total_sale,
+	COALESCE(AVG(s.return_date - s.shipping_date), 0) as average_days
+FROM orders as o
+JOIN 
+order_items as oi
+ON oi.order_id = o.order_id
+JOIN 
+shipping as s
+ON 
+s.order_id = o.order_id
+GROUP BY 1
+
+-- No proper information on Returndate
+
+
+
+
+/*
+19. Top 10 product with highest decreasing revenue ratio compare to last year(2022) and current_year(2023)
+Challenge: Return product_id, product_name, category_name, 2022 revenue and 2023 revenue decrease ratio at end Round the result
+Note: Decrease ratio = cr-ls/ls* 100 (cs = current_year ls=last_year)
+*/
+
+
+
+WITH last_year_sale
+as
+(
+SELECT 
+	p.product_id,
+	p.product_name,
+	SUM(oi.total_sale) as revenue
+FROM orders as o
+JOIN 
+order_items as oi
+ON oi.order_id = o.order_id
+JOIN 
+products as p
+ON 
+p.product_id = oi.product_id
+WHERE EXTRACT(YEAR FROM o.order_date) = 2022
+GROUP BY 1, 2
+),
+
+current_year_sale
+AS
+(
+SELECT 
+	p.product_id,
+	p.product_name,
+	SUM(oi.total_sale) as revenue
+FROM orders as o
+JOIN 
+order_items as oi
+ON oi.order_id = o.order_id
+JOIN 
+products as p
+ON 
+p.product_id = oi.product_id
+WHERE EXTRACT(YEAR FROM o.order_date) = 2023
+GROUP BY 1, 2
+)
+
+SELECT
+	cs.product_id,
+	ls.revenue as last_year_revenue,
+	cs.revenue as current_year_revenue,
+	ls.revenue - cs.revenue as rev_diff,
+	ROUND((cs.revenue - ls.revenue)::numeric/ls.revenue::numeric * 100, 2) as reveneue_dec_ratio
+FROM last_year_sale as ls
+JOIN
+current_year_sale as cs
+ON ls.product_id = cs.product_id
+WHERE 
+	ls.revenue > cs.revenue
+
+
+/*20. Final Task: Stored Procedure
+Create a stored procedure that, when a product is sold, performs the following actions:
+Inserts a new sales record into the orders and order_items tables.
+Updates the inventory table to reduce the stock based on the product and quantity purchased.
+The procedure should ensure that the stock is adjusted immediately after recording the sale.
+*/
+
+CREATE OR REPLACE PROCEDURE add_sales
+(
+    p_order_id INT,
+    p_customer_id INT,
+    p_seller_id INT,
+    p_order_item_id INT,
+    p_product_id INT,
+    p_quantity INT
+)
+LANGUAGE plpgsql
+AS $$
+DECLARE 
+    v_count INT;
+    v_price FLOAT;
+    v_product VARCHAR(50);
+BEGIN
+    -- Fetching product name and price based on product_id entered
+    SELECT 
+        price, product_name
+    INTO
+        v_price, v_product
+    FROM products
+    WHERE product_id = p_product_id;
+    
+    -- Checking stock and product availability in inventory    
+    SELECT 
+        COUNT(*) 
+    INTO
+        v_count
+    FROM inventory
+    WHERE 
+        product_id = p_product_id
+        AND 
+        inventory.stock_remaining >= p_quantity;
+        
+    IF v_count > 0 THEN
+        -- Add into orders and order_items table, then update inventory
+        INSERT INTO orders(order_id, order_date, customer_id, seller_id)
+        VALUES
+            (p_order_id, CURRENT_DATE, p_customer_id, p_seller_id);
+
+        INSERT INTO order_items(order_item_id, order_id, product_id, quantity, price_per_unit, total_sale)
+        VALUES
+            (p_order_item_id, p_order_id, p_product_id, p_quantity, v_price, v_price * p_quantity);
+
+        UPDATE inventory
+        SET stock_remaining = stock_remaining - p_quantity
+        WHERE product_id = p_product_id;
+        
+        RAISE NOTICE 'Thank you, product: % sale has been added and inventory stock updated', v_product; 
+    ELSE
+        RAISE NOTICE 'Thank you for your info, the product: % is not available', v_product;
+    END IF;
+END;
+$$;
+
+
+
+
+-- Testing Store Procedure**
+call add_sales
+(
+25005, 2, 5, 25004, 1, 14
+);
 
 
 
