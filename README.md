@@ -125,7 +125,7 @@ Below are the business problems addressed, along with the SQL queries (located i
 
 ### Prerequisites
 - **PostgreSQL**: Ensure you have PostgreSQL installed for database creation and querying.
-- **Python Notebook**: Required for EDA in `E_Commerce_EDA.ipynb`.
+- **Python Notebook**: Required for EDA in ![Preliminary EDA](https://github.com/KeshavaYada/E-Commerce-Analysis---SQL/blob/main/E_Commerce_EDA.ipynb)
 - **pgAdmin**: Recommended for managing the PostgreSQL database.
 
 
