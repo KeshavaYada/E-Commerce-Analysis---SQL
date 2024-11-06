@@ -19,6 +19,7 @@ This project involves analyzing an e-commerce dataset similar to Amazon using SQ
 - **E_Commerce_EDA.ipynb**: Jupyter Notebook for exploratory data analysis (EDA).
 - **My_ERD_Database.png**: Entity Relationship Diagram (ERD) visualizing the database schema.
 - **Problems_solving.sql**: SQL queries used to solve the business problems.
+- **Codefiles**: Includes code files for each problem seperately.
 - **README.md**: Project documentation (you're reading it!).
 
 ### Datasets 📁
