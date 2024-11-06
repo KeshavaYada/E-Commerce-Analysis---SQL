@@ -1,4 +1,4 @@
--- Amazon advanced SQL project
+
 -- Defining the All tables 
 
 create table category 
