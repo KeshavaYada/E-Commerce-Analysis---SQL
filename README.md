@@ -113,9 +113,10 @@ Below are the business problems addressed, along with the SQL queries (located i
 19. **Top 10 Products with Decreasing Revenue** 📉  
     - Find the top 10 products with the highest revenue decrease ratio from 2022 to 2023.
     - **Challenge**: Return product ID, product name, category name, 2022 revenue, 2023 revenue, and decrease ratio.
-
-20. **Problem Statement: Create a stored procedure to handle product sales by deducting stock in the inventory table based on the quantity purchased and notifying the user. If stock is insufficient, inform the user that the product is unavailable.**
--Challenge: Ensure the procedure correctly updates inventory only when sufficient stock exists and provides real-time feedback to the user about the transaction status.
+    
+20. Sales Transaction and Inventory Update 🛒
+    - Create a stored procedure to handle product sales by deducting stock from inventory based on quantity sold.
+    - **Challenge**: Notify the user if the product is out of stock and ensure the inventory is only updated when sufficient stock is available.
 
 ---
 
