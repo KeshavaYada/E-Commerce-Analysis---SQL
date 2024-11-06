@@ -94,25 +94,28 @@ Below are the business problems addressed, along with the SQL queries (located i
     - Query the top 10 products by the number of returns.
     - **Challenge**: Display the return rate as a percentage of total units sold for each product.
 
-14. **Inactive Sellers** 🛑  
+15. **Inactive Sellers** 🛑  
     - Identify sellers who haven’t made any sales in the last 6 months.
     - **Challenge**: Show the last sale date and total sales from those sellers.
 
-15. **Returning vs. New Customers** 🔄👤  
+16. **Returning vs. New Customers** 🔄👤  
     - Categorize customers as "returning" if they have more than 5 returns, otherwise as "new."
     - **Challenge**: List customer ID, name, total orders, and total returns.
 
-16. **Top 5 Customers by Orders in Each State** 🌎  
+17. **Top 5 Customers by Orders in Each State** 🌎  
     - Identify the top 5 customers with the highest number of orders for each state.
     - **Challenge**: Include the number of orders and total sales for each customer.
 
-17. **Revenue by Shipping Provider** 🚚  
+18. **Revenue by Shipping Provider** 🚚  
     - Calculate the total revenue handled by each shipping provider.
     - **Challenge**: Include the total number of orders and average delivery time for each provider.
 
-18. **Top 10 Products with Decreasing Revenue** 📉  
+19. **Top 10 Products with Decreasing Revenue** 📉  
     - Find the top 10 products with the highest revenue decrease ratio from 2022 to 2023.
     - **Challenge**: Return product ID, product name, category name, 2022 revenue, 2023 revenue, and decrease ratio.
+
+20. **Problem Statement: Create a stored procedure to handle product sales by deducting stock in the inventory table based on the quantity purchased and notifying the user. If stock is insufficient, inform the user that the product is unavailable.**
+-Challenge: Ensure the procedure correctly updates inventory only when sufficient stock exists and provides real-time feedback to the user about the transaction status.
 
 ---
 
