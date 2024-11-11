@@ -9,9 +9,7 @@ This project involves analyzing an e-commerce dataset similar to Amazon using SQ
 - Create a structured database to manage and analyze e-commerce data.
 - Conduct exploratory data analysis (EDA) to identify trends and patterns.
 - Solve business problems with SQL to aid in decision-making.
-
 ---
-
 ## Folder Structure 📂
 - **datasets/**: Contains all raw datasets used for analysis, including customer, order, product, and category data.
 - **Outputs/**: Includes output files in the form of images and tables generated from the analysis.
